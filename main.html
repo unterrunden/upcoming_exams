@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Upcoming Exams</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center text-white">
+  <h1 class="text-4xl md:text-6xl font-bold mt-10 mb-8 text-center">My Upcoming Exams</h1>
+
+  <div class="w-full max-w-6xl px-4">
+    <h2 class="text-2xl mb-4 font-semibold">Upcoming Exams</h2>
+    <div id="exam-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Exam cards will be inserted here -->
+    </div>
+
+    <h2 class="text-2xl mt-12 mb-4 font-semibold">Past Exams</h2>
+    <div id="past-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Past exam cards -->
+    </div>
+  </div>
+
+  <script>
+    const exams = [
+      {
+        subject: "Mathematics",
+        date: "2025-05-12",
+        time: "09:00",
+        topic: "Calculus & Integrals",
+        durationMinutes: 90,
+        image: "math.jpg"
+      },
+      {
+        subject: "Physics",
+        date: "2025-05-15",
+        time: "11:00",
+        topic: "Newton's Laws & Friction",
+        durationMinutes: 120,
+        image: "physics.jpg"
+      },
+      {
+        subject: "Biology",
+        date: "2025-05-20",
+        time: "08:30",
+        topic: "Genetics & DNA",
+        durationMinutes: 60,
+        image: "bio.jpg"
+      }
+    ];
+
+    const upcomingContainer = document.getElementById("exam-container");
+    const pastContainer = document.getElementById("past-container");
+
+    exams.forEach((exam, index) => {
+      const examStart = new Date(`${exam.date}T${exam.time}`);
+      const examEnd = new Date(examStart.getTime() + exam.durationMinutes * 60000);
+
+      const card = document.createElement("div");
+      card.className = "rounded-full w-full h-72 flex flex-col justify-center items-center text-center shadow-lg overflow-hidden relative glass";
+      card.style.backgroundImage = `url('${exam.image}')`;
+      card.style.backgroundSize = "cover";
+      card.style.backgroundPosition = "center";
+
+      card.innerHTML = `
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center px-6">
+          <h2 class="text-2xl font-bold mb-1">${exam.subject}</h2>
+          <p class="text-sm">${exam.date} at ${exam.time} <br><span id="countdown-${index}" class="text-xs text-gray-300"></span></p>
+          <p class="mt-2 text-base">${exam.topic}</p>
+        </div>
+      `;
+
+      upcomingContainer.appendChild(card);
+      const countdownEl = card.querySelector(`#countdown-${index}`);
+
+      function updateCountdown() {
+        const now = new Date();
+
+        if (now >= examEnd) {
+          upcomingContainer.removeChild(card);
+          pastContainer.appendChild(card);
+          countdownEl.textContent = "Completed";
+          return;
+        }
+
+        if (now >= examStart && now < examEnd) {
+          const remaining = examEnd - now;
+          const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+          const seconds = Math.floor((remaining / 1000) % 60);
+          countdownEl.textContent = `Ends in ${minutes}m ${seconds}s`;
+          return;
+        }
+
+        const diff = examStart - now;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        if (diff < 60 * 60 * 1000) {
+          countdownEl.textContent = `${minutes}m ${seconds}s`;
+        } else {
+          countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  </script>
+</body>
+</html>
