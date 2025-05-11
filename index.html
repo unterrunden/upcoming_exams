@@ -1,104 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Upcoming Exams</title>
+  <title>Anstehende Klausuren</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fdark-sunset&psig=AOvVaw0ATGAMQWdrsK2kTSqZqYTk&ust=1745059983578000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCODn6JK14YwDFQAAAAAdAAAAABAK');
+      background-image: url('https://images.unsplash.com/photo-1638305041928-504c528182fe?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZGFyayUyMHN1bnNldHxlbnwwfHwwfHx8MA%3D%3D');
       background-size: cover;
       background-position: center;
     }
     .glass {
       background: rgba(255, 255, 255, 0.2);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center text-white">
-  <h1 class="text-4xl md:text-6xl font-bold mt-10 mb-8 text-center">Anstehende Klausuren</h1>
+<body class="min-h-screen flex flex-col items-start text-white px-6">
+  <h1 class="text-4xl md:text-6xl font-bold mt-10 mb-8 self-center">anstehende Klausuren</h1>
 
-  <div class="w-full max-w-6xl px-4">
-    <h2 class="text-2xl mb-4 font-semibold">Upcoming Exams</h2>
-    <div id="exam-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Exam cards will be inserted here -->
-    </div>
+  <div class="w-full max-w-full">
+    <h2 id="inProgressHeading" class="text-2xl mb-4 font-semibold hidden">laufend</h2>
+    <div id="in-progress-container" class="grid grid-cols-5 gap-6 mb-6"></div>
+    <h2 id="upcomingHeading" class="text-2xl mb-4 font-semibold">anstehend</h2>
+    <div id="exam-container" class="grid grid-cols-5 gap-6 max-h-[36rem] overflow-y-auto no-scrollbar"></div>
+    <p id="more-count" class="text-right mt-4 text-lg italic"></p>
 
-    <h2 class="text-2xl mt-12 mb-4 font-semibold">Past Exams</h2>
-    <div id="past-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Past exam cards -->
-    </div>
+    <h2 id="pastHeading" class="text-2xl mb-4 font-semibold hidden">abgeschlossen</h2>
+
+    <h2 id="pastHeadingShow" class="text-2xl mt-12 mb-4 font-semibold">abgeschlossen</h2>
+    <!-- <button id="toggle-order" class="mb-4 px-4 py-2 bg-gray-500 text-black rounded hover:bg-gray-600 transition hidden">aufsteigend sortieren</button> -->
+    <button id="toggle-completed" class="mb-4 px-4 py-2 bg-gray-500 text-black rounded hover:bg-gray-600 transition">abgeschlossene anzeigen</button>
+    <div id="past-container" class="space-y-8 max-h-[36rem] overflow-y-auto hidden no-scrollbar"></div>
+    <p id="no-completed-msg" class="text-white text-lg italic mt-4 hidden">Keine abgeschlossenen Klausuren</p>
   </div>
 
   <script>
+    const mathematicsURL = "https://krieger.jhu.edu/math/wp-content/uploads/sites/62/2020/04/math-buckets-2.jpg";
+    const physicsURL = "https://caltechsites-prod.s3.amazonaws.com/scienceexchange/images/QuantumPhysics-TintedFeature-Image-WEB.width-600.jpg";
+    const computerscienceURL = "https://media.licdn.com/dms/image/v2/C5112AQGUKpZviShFeA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1565704813458?e=2147483647&v=beta&t=ZWRdpPEZmHIwvg70Y-2Uq6mrb0qUcxh6SdoowPeklcw";
+    const germanURL = "https://images.pond5.com/pages-german-language-book-are-footage-108602659_iconl.jpeg";
+    const englishURL = "https://content.paulreiffer.com/wp-content/uploads/2013/08/Fine-Art-Limited-Edition-Print-Wall-Corporate-Decoration-Interior-Design-Paul-Reiffer-Photographer-Photography-High-End-Landscape-Cityscape-Buy-Save-Me-San-Francisco-Bay-Bridge-California.jpg";
+    const latinURL = "https://cdn.mos.cms.futurecdn.net/wf5LtkE8f5TLtag5j7KNzE-1200-80.jpg";
+    const historyURL = "https://s3.amazonaws.com/cms.ipressroom.com/175/files/20205/5ef50ca72cfac217dca801df_The+Slave+Trade+-+Auguste+Francois+Biard/The+Slave+Trade+-+Auguste+Francois+Biard_hero.jpg";
+    const socialsciencesURL = "https://fhmedien.de/wp-content/uploads/2024/02/012_DeutscherBundestag4_k24.jpg";
+    const philosophyURL = "https://images.ctfassets.net/szez98lehkfm/3A3lwhCO0JqUS1ZoIMapkz/75267dff1c010a8df71e4140dc0d6b41/MyIC_Article135093?w=730&h=410&fm=jpg&fit=fill";
+
     const exams = [
       {
-        subject: "Mathematics",
-        date: "2025-05-12",
-        time: "09:00",
-        topic: "Calculus & Integrals",
+        subject: "Informatik",
+        date: "2025-05-06",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Java - weitergeführte Grundlagen und Arrays",
         durationMinutes: 90,
-        image: "url(https://www.google.com/url?sa=i&url=https%3A%2F%2Fmathematics.jhu.edu%2F&psig=AOvVaw3mKIhLD35ZSO3cBebQG6o4&ust=1745060058603000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPiQvN624YwDFQAAAAAdAAAAABAP)"
+        paper: "kariert",
+        image: computerscienceURL,
+        grade: "EF",
+        quarter: 4
       },
       {
-        subject: "Physics",
-        date: "2025-05-15",
-        time: "11:00",
-        topic: "Newton's Laws & Friction",
-        durationMinutes: 120,
-        image: "url(https://www.google.com/url?sa=i&url=https%3A%2F%2Fscienceexchange.caltech.edu%2Ftopics%2Fquantum-science-explained%2Fquantum-physics&psig=AOvVaw0wRrdMdybIWESo1FPB3NYM&ust=1745060714797000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDvhpS44YwDFQAAAAAdAAAAABAE)"
+        subject: "Geschichte",
+        date: "2025-05-12",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Fremdsein und Entdecker",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: historyURL,
+        grade: "EF",
+        quarter: 4
       },
       {
-        subject: "Biology",
-        date: "2025-05-20",
-        time: "08:30",
-        topic: "Genetics & DNA",
-        durationMinutes: 60,
-        image: "bio.jpg"
+        subject: "Englisch",
+        date: "2025-05-14",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Analyse und creative writing Romanauszug",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: englishURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Philosophie",
+        date: "2025-05-19",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: null,
+        durationMinutes: 90,
+        paper: "liniert",
+        image: philosophyURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Sozialwissenschaften",
+        date: "2025-05-23",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Individuum und Gesellschaft",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: socialsciencesURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Latein",
+        date: "2025-05-26",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Ovid - Liebeselegie",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: latinURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Physik",
+        date: "2025-06-02",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: null,
+        durationMinutes: 90,
+        paper: "kariert",
+        image: physicsURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Deutsch",
+        date: "2025-06-04",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "politische Lyrik",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: germanURL,
+        grade: "EF",
+        quarter: 4
+      },
+      {
+        subject: "Geschichte",
+        date: "2025-02-25",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Menschenrechte, Aufklärung und französische Revolution",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: historyURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Informatik",
+        date: "2025-03-06",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Java - weitergeführte Grundlagen und Klassendiagramme",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: computerscienceURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Englisch",
+        date: "2025-03-11",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Analyse und Kommentar Zeitungsartikel (global challenges)",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: englishURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Philosophie",
+        date: "2025-03-20",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Recht und Freiheit",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: philosophyURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Deutsch",
+        date: "2025-03-21",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Analse Romanauszug (Jugend ohne Gott)",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: germanURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Sozialwissenschaften",
+        date: "2025-03-25",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Ökönomie (Konsumenten und Unternehmen)",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: socialsciencesURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Latein",
+        date: "2025-03-31",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Ovid - Liebeselegie (Ars amatoria)",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: latinURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Mathematik",
+        date: "2025-04-03",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Ableitung und Untersuchen von Funktionen",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: mathematicsURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Physik",
+        date: "2025-04-07",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Kräfte, Energie und Impuls",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: physicsURL,
+        grade: "EF",
+        quarter: 3
+      },
+      {
+        subject: "Informatik",
+        date: "2024-11-12",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Java - Grundlagen",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: computerscienceURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Physik",
+        date: "2024-11-20",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Kinematik",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: physicsURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Geschichte",
+        date: "2024-11-25",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Kreuzzüge, Kreuzfahrerstaaten",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: historyURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Englisch",
+        date: "2024-12-03",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Analyse Romanauszug",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: englishURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Deutsch",
+        date: "2024-12-06",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Analyse Dramenauszug (Antigone)",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: germanURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Philosophie",
+        date: "2024-12-10",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "der Mensch und andere Tiere",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: philosophyURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Mathematik",
+        date: "2024-12-16",
+        startTime: "12:25",
+        endTime: "14:10",
+        topic: "ganzrationale Funktionen",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: mathematicsURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Sozialwissenschaften",
+        date: "2024-12-17",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "politische Systeme",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: socialsciencesURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Latein",
+        date: "2025-01-10",
+        startTime: "09:45",
+        endTime: "11:15",
+        topic: "Caesar und gerechte Kriege",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: latinURL,
+        grade: "EF",
+        quarter: 2
+      },
+      {
+        subject: "Englisch",
+        date: "2024-09-23",
+        startTime: "07:50",
+        endTime: "09:25",
+        topic: "Analyse argumentativer Artikel",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: englishURL,
+        grade: "EF",
+        quarter: 1
+      },
+      {
+        subject: "Mathematik",
+        date: "2024-09-30",
+        startTime: "12:25",
+        endTime: "14:10",
+        topic: "Potenzfunktionen",
+        durationMinutes: 90,
+        paper: "kariert",
+        image: mathematicsURL,
+        grade: "EF",
+        quarter: 1
+      },
+      {
+        subject: "Deutsch",
+        date: "2024-10-11",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Analyse pragmatischer Text",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: germanURL,
+        grade: "EF",
+        quarter: 1
+      },
+      {
+        subject: "Latein",
+        date: "2024-11-05",
+        startTime: "11:35",
+        endTime: "13:10",
+        topic: "Caesar und gerechte Kriege",
+        durationMinutes: 90,
+        paper: "liniert",
+        image: latinURL,
+        grade: "EF",
+        quarter: 1
       }
     ];
 
+    const grade = "EF";
+    const quarter = 4;
+
+    document.querySelector('title').textContent = `Anstehende Klausuren (${grade} Q${quarter})`;
+
+    for (const exam of exams) {
+      if (exam.topic === null) {
+        exam.topic = "(Thema unbekannt)";
+      }
+    }
+
     const upcomingContainer = document.getElementById("exam-container");
     const pastContainer = document.getElementById("past-container");
+    const toggleCompletedButton = document.getElementById("toggle-completed");
+    // const toggleOrderButton = document.getElementById("toggle-order");
 
-    exams.forEach((exam, index) => {
-      const examStart = new Date(`${exam.date}T${exam.time}`);
-      const examEnd = new Date(examStart.getTime() + exam.durationMinutes * 60000);
+    const pastSections = {};
+    let showingPast = false;
+    let activeIntervals = [];
+
+    const formatDate = (isoDate) => {
+      const d = new Date(isoDate);
+      const day = d.getDate().toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}.${month}.${year}`;
+    };
+
+    function getWeekday(day) {
+      return ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."][day.getDay()];
+    }
+
+    const createExamCard = (exam, index) => {
+      const examStart = new Date(`${exam.date}T${exam.startTime}`);
+      const examEnd = new Date(`${exam.date}T${exam.endTime}`);
+      const weekday = examStart.toLocaleString('de-DE', { weekday: 'long' });
 
       const card = document.createElement("div");
-      card.className = "rounded-full w-full h-72 flex flex-col justify-center items-center text-center shadow-lg overflow-hidden relative glass";
+      card.className = "rounded-xl w-50 h-60 flex flex-col justify-center items-center text-center shadow-lg overflow-hidden relative glass";
       card.style.backgroundImage = `url('${exam.image}')`;
       card.style.backgroundSize = "cover";
       card.style.backgroundPosition = "center";
 
       card.innerHTML = `
-        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center px-6">
-          <h2 class="text-2xl font-bold mb-1">${exam.subject}</h2>
-          <p class="text-sm">${exam.date} at ${exam.time} <br><span id="countdown-${index}" class="text-xs text-gray-300"></span></p>
-          <p class="mt-2 text-base">${exam.topic}</p>
+        <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center px-4 pt-1 space-y-2.5">
+          <h2 class="text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
+          <p class="text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[1.075rem] text-gray-300"></span></p>
+          <p class="text-xl text-gray-400">${exam.paper}</p>
+          <p class="mt-2 text-[1.275rem]">${exam.topic}</p>
         </div>
       `;
 
-      upcomingContainer.appendChild(card);
       const countdownEl = card.querySelector(`#countdown-${index}`);
 
       function updateCountdown() {
         const now = new Date();
 
         if (now >= examEnd) {
-          upcomingContainer.removeChild(card);
-          pastContainer.appendChild(card);
-          countdownEl.textContent = "Completed";
+          if (card.parentNode) card.parentNode.removeChild(card);
+
+          const key = `${exam.grade}-${exam.quarter}`;
+          if (!pastSections[key]) {
+            pastSections[key] = createSection(exam.grade, exam.quarter);
+          }
+          pastSections[key].appendChild(card);
+
+          const daysInYear = ((examEnd.getFullYear() % 4 === 0 && examEnd.getFullYear() % 100 !== 0) || (examEnd.getFullYear() % 400 === 0)) ? 366 : 365;
+          const seconds = Math.floor((now - examEnd) / 1000) % 60;
+          const minutes = Math.floor((now - examEnd) / (1000 * 60)) % 60;
+          const hours = Math.floor((now - examEnd) / (1000 * 60 * 60)) % 24;
+          const days = Math.floor((now - examEnd) / (1000 * 60 * 60 * 24));
+          const years = Math.floor((now - examEnd) / (1000 * 60 * 60 * 24 * daysInYear));
+
+          if (minutes === 0) {
+            countdownEl.textContent = seconds === 1 ? "abgeschlossen | vor 1 Sekunde" : `abgeschlossen | vor ${seconds} Sekunden`;
+          } 
+          else if (hours === 0) {
+            const minutesText = minutes === 1 ? "1 Minute" : `${minutes} Minuten`;
+            const secondsText = seconds === 1 ? "1 Sekunde" : `${seconds} Sekunden`;
+            countdownEl.textContent = seconds === 0 ? `abgeschlossen | vor ${minutesText}` : `abgeschlossen | vor ${minutesText} und ${secondsText}`;
+          } 
+          else if (days === 0) {
+            const hoursText = hours === 1 ? "1 Stunde" : `${hours} Stunden`;
+            const minutesText = minutes === 1 ? "1 Minute" : `${minutes} Minuten`;
+            countdownEl.textContent = minutes === 0 ? `abgeschlossen | vor ${hoursText}` : `abgeschlossen | vor ${hoursText} und ${minutesText}`;
+          } 
+          else if (days <= daysInYear) {
+            countdownEl.textContent = days === 1 ? `abgeschlossen | vor 1 Tag ${hours} Stunden` : `abgeschlossen | vor ${days} Tagen`;
+          } 
+          else {
+            const yearsText = years === 1 ? "Jahr" : "Jahren";
+            const remainingDays = days - years * daysInYear;
+            const daysText = remainingDays === 1 ? "1 Tag" : `${remainingDays} Tagen`;  
+            countdownEl.textContent = `abgeschlossen | vor ${years} ${yearsText} ${daysText}`;
+          }
           return;
         }
-
+  
         if (now >= examStart && now < examEnd) {
           const remaining = examEnd - now;
+          const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
           const minutes = Math.floor((remaining / (1000 * 60)) % 60);
           const seconds = Math.floor((remaining / 1000) % 60);
-          countdownEl.textContent = `Ends in ${minutes}m ${seconds}s`;
+          if (minutes === 0) {
+            countdownEl.textContent = `endet in ${seconds}s`;
+          } else if (hours === 0) {
+            countdownEl.textContent = `endet in ${minutes}m ${seconds}s`;
+          } else {
+            countdownEl.textContent = `endet in ${hours}h ${minutes}m`;
+          }
           return;
         }
 
@@ -110,14 +539,130 @@
 
         if (diff < 60 * 60 * 1000) {
           countdownEl.textContent = `${minutes}m ${seconds}s`;
+        } else if (diff > 24 * 60 * 60 * 1000) {
+          countdownEl.textContent = `${days}d ${hours}h`;
         } else {
-          countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
-        }
+		      countdownEl.textContent = `${hours}h ${minutes}m`;
+		    }
       }
 
       updateCountdown();
-      setInterval(updateCountdown, 1000);
+      const interval = setInterval(updateCountdown, 1000);
+      activeIntervals.push(interval);
+
+      return { card, end: examEnd };
+    };
+
+    const createSection = (grade, quarter) => {
+      const section = document.createElement("div");
+      const header = document.createElement("h3");
+      header.className = "text-lg font-semibold mb-2";
+      header.textContent = `${grade} - ${quarter}. Quartal`;
+
+      const grid = document.createElement("div");
+      grid.className = "grid grid-cols-5 gap-4";
+
+      section.appendChild(header);
+      section.appendChild(grid);
+      pastContainer.appendChild(section);
+
+      return grid;
+    };
+
+    function renderUpcomingExams() {
+      upcomingContainer.innerHTML = '';
+      document.getElementById("in-progress-container").innerHTML = '';
+      document.getElementById("inProgressHeading").classList.add("hidden");
+
+      activeIntervals.forEach(clearInterval);
+      activeIntervals = [];
+
+      let visible = 0;
+      const now = new Date();
+
+      exams.forEach((exam, index) => {
+        const examStart = new Date(`${exam.date}T${exam.startTime}`);
+        const examEnd = new Date(`${exam.date}T${exam.endTime}`);
+
+        if (now >= examEnd) {
+          return;
+        }
+
+        const { card } = createExamCard(exam, index);
+
+        if (now >= examStart && now < examEnd) {
+          document.getElementById("in-progress-container").appendChild(card);
+          document.getElementById("inProgressHeading").classList.remove("hidden");
+        } else if (visible < 9) {
+          upcomingContainer.appendChild(card);
+          visible++;
+        }
+      });
+
+      const remaining = exams.filter(e => {
+        const end = new Date(`${e.date}T${e.endTime}`);
+        const start = new Date(`${e.date}T${e.startTime}`);
+        return new Date() < start;
+      }).length - visible;
+
+      if (remaining > 0) {
+        const moreBox = document.createElement("div");
+        moreBox.className = "rounded-xl w-50 h-60 flex items-center justify-center text-center text-xl font-semibold";
+        moreBox.innerHTML = `… und ${remaining} weitere`;
+        upcomingContainer.appendChild(moreBox);
+      }
+    }
+
+    renderUpcomingExams();
+
+    exams.forEach((exam, index) => {
+      const examEnd = new Date(`${exam.date}T${exam.endTime}`);
+      const now = new Date();
+      if (now >= examEnd) {
+        const key = `${exam.grade}-${exam.quarter}`;
+        if (!pastSections[key]) {
+          pastSections[key] = createSection(exam.grade, exam.quarter);
+        }
+        const { card } = createExamCard(exam, index);
+        pastSections[key].appendChild(card);
+      }
     });
+
+    const inProgressHeading = document.getElementById("inProgressHeading");
+    const inProgressContainer = document.getElementById("in-progress-container");
+    const upcomingHeading = document.getElementById("upcomingHeading");
+    const pastHeading = document.getElementById("pastHeading");
+    const pastHeadingShow = document.getElementById("pastHeadingShow");
+
+    toggleCompletedButton.addEventListener("click", () => {
+    showingPast = !showingPast;
+    if (showingPast) {
+      upcomingContainer.innerHTML = '';
+      upcomingHeading.classList.add("hidden");
+      pastHeading.classList.remove("hidden");
+      pastHeadingShow.classList.add("hidden");
+      inProgressHeading.classList.add("hidden");
+      inProgressContainer.classList.add("hidden");
+      const hasCompleted = Object.keys(pastSections).length > 0;
+      document.getElementById("no-completed-msg").classList.toggle("hidden", hasCompleted);
+      activeIntervals.forEach(clearInterval);
+      activeIntervals = [];
+      pastContainer.classList.remove("hidden");
+      toggleCompletedButton.textContent = "zurück zu anstehenden";
+      // toggleOrderButton.classList.remove("hidden");
+    } else {
+      upcomingHeading.classList.remove("hidden");
+      pastContainer.classList.add("hidden");
+      pastHeading.classList.add("hidden");
+      pastHeadingShow.classList.remove("hidden");
+      inProgressHeading.classList.remove("hidden");
+      inProgressContainer.classList.remove("hidden");
+      document.getElementById("no-completed-msg").classList.add("hidden");
+      renderUpcomingExams();
+      toggleCompletedButton.textContent = "abgeschlossene anzeigen";
+      // toggleOrderButton.classList.add("hidden");
+    }
+  });
   </script>
 </body>
 </html>
