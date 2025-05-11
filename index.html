@@ -29,15 +29,15 @@
   <h1 class="text-2xl md:text-6xl font-bold mt-10 mb-8 self-center">anstehende Klausuren</h1>
 
   <div class="w-full max-w-full">
-    <h2 id="inProgressHeading" class="text-xl md:text-2xl mb-4 font-semibold hidden">laufend</h2>
+    <h2 id="inProgressHeading" class="text-lg md:text-2xl mb-4 font-semibold hidden">laufend</h2>
     <div id="in-progress-container" class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-6"></div>
-    <h2 id="upcomingHeading" class="text-xl md:text-2xl mb-4 font-semibold">anstehend</h2>
+    <h2 id="upcomingHeading" class="text-lg md:text-2xl mb-4 font-semibold">anstehend</h2>
     <div id="exam-container" class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-h-[42rem] overflow-y-auto no-scrollbar"></div>
     <p id="more-count" class="text-right mt-4 text-base md:text-lg italic"></p>
 
-    <h2 id="pastHeading" class="text-xl md:text-2xl mb-4 font-semibold hidden">abgeschlossen</h2>
+    <h2 id="pastHeading" class="text-lg md:text-2xl mb-4 font-semibold hidden">abgeschlossen</h2>
 
-    <h2 id="pastHeadingShow" class="text-xl md:text-2xl mt-12 mb-4 font-semibold">abgeschlossen</h2>
+    <h2 id="pastHeadingShow" class="text-lg md:text-2xl mt-12 mb-4 font-semibold">abgeschlossen</h2>
     <!-- <button id="toggle-order" class="mb-4 px-4 py-2 bg-gray-500 text-black rounded hover:bg-gray-600 transition hidden">aufsteigend sortieren</button> -->
     <button id="toggle-completed" class="mb-4 px-4 py-2 bg-gray-500 text-black rounded hover:bg-gray-600 transition">abgeschlossene anzeigen</button>
     <div id="past-container" class="space-y-8 max-h-[42rem] overflow-y-auto hidden no-scrollbar"></div>
@@ -463,10 +463,10 @@
 
       card.innerHTML = `
         <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center px-4 pt-1 space-y-2.5">
-          <h2 class="text-[1.8rem] md:text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
-          <p class="text-base md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[1rem] md:text-[1.075rem] text-gray-300"></span></p>
-          <p class="text-base md:text-lg text-gray-400">${exam.paper}</p>
-          <p class="mt-2 text-[1.125rem] md:text-[1.275rem]">${exam.topic}</p>
+          <h2 class="text-[1.4rem] md:text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
+          <p class="text-sm md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[1rem] md:text-[1.075rem] text-gray-300"></span></p>
+          <p class="text-sm md:text-lg text-gray-400">${exam.paper}</p>
+          <p class="mt-2 text-[1rem] lg: text-[1.2rem] md:text-[1.275rem]">${exam.topic}</p>
         </div>
       `;
 
@@ -556,7 +556,7 @@
     const createSection = (grade, quarter) => {
       const section = document.createElement("div");
       const header = document.createElement("h3");
-      header.className = "text-base md:text-lg font-semibold mb-2";
+      header.className = "text-sm md:text-lg font-semibold mb-2";
       header.textContent = `${grade} - ${quarter}. Quartal`;
 
       const grid = document.createElement("div");
@@ -607,7 +607,7 @@
 
       if (remaining > 0) {
         const moreBox = document.createElement("div");
-        moreBox.className = "rounded-xl w-50 h-60 flex items-center justify-center text-center text-base md:text-lg font-semibold";
+        moreBox.className = "rounded-xl w-50 h-60 flex items-center justify-center text-center text-sm md:text-lg font-semibold";
         moreBox.innerHTML = `… und ${remaining} weitere`;
         upcomingContainer.appendChild(moreBox);
       }
