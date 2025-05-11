@@ -482,7 +482,7 @@
           if (!pastSections[key]) {
             pastSections[key] = createSection(exam.grade, exam.quarter);
           }
-          pastSections[key].appendChild(card);
+          pastSections[key].prepend(card);
 
           const daysInYear = ((examEnd.getFullYear() % 4 === 0 && examEnd.getFullYear() % 100 !== 0) || (examEnd.getFullYear() % 400 === 0)) ? 366 : 365;
           const seconds = Math.floor((now - examEnd) / 1000) % 60;
