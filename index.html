@@ -463,10 +463,10 @@
 
       card.innerHTML = `
         <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center px-4 pt-1 space-y-2.5">
-          <h2 class="text-[1.1rem] md:text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
-          <p class="text-xs md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[0.8rem] md:text-[1.075rem] text-gray-300"></span></p>
-          <p class="text-xs md:text-lg text-gray-400">${exam.paper}</p>
-          <p class="mt-2 text-[0.7rem] md:text-[1.275rem]">${exam.topic}</p>
+          <h2 class="text-[1.05rem] md:text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
+          <p class="text-[0.6rem] md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[0.65rem] md:text-[1.075rem] text-gray-300"></span></p>
+          <p class="text-[0.65rem] md:text-lg text-gray-400">${exam.paper}</p>
+          <p class="mt-2 text-[0.55rem] md:text-[1.275rem]">${exam.topic}</p>
         </div>
       `;
 
