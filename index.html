@@ -30,9 +30,9 @@
 
   <div class="w-full max-w-full">
     <h2 id="inProgressHeading" class="text-2xl mb-4 font-semibold hidden">laufend</h2>
-    <div id="in-progress-container" class="grid grid-cols-1 md:grid-cols- gap-6 mb-6"></div>
+    <div id="in-progress-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6"></div>
     <h2 id="upcomingHeading" class="text-2xl mb-4 font-semibold">anstehend</h2>
-    <div id="exam-container" class="grid grid-cols-1 md:grid-cols-5 gap-6 max-h-[42rem] overflow-y-auto no-scrollbar"></div>
+    <div id="exam-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 max-h-[42rem] overflow-y-auto no-scrollbar"></div>
     <p id="more-count" class="text-right mt-4 text-lg italic"></p>
 
     <h2 id="pastHeading" class="text-2xl mb-4 font-semibold hidden">abgeschlossen</h2>
@@ -560,7 +560,7 @@
       header.textContent = `${grade} - ${quarter}. Quartal`;
 
       const grid = document.createElement("div");
-      grid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
+      grid.className = "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4";
 
       section.appendChild(header);
       section.appendChild(grid);
