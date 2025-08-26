@@ -434,7 +434,7 @@
     const quarter = 1;
 
     document.querySelector('title').textContent = `Anstehende Klausuren (${grade} Q${quarter})`;
-	document.getElementById("main-title").textContent = `anstehende Klausuren (${grade} Quartal ${quarter})`;
+	document.getElementById("main-header").textContent = `anstehende Klausuren (${grade} Quartal ${quarter})`;
 
     for (const exam of exams) {
       if (exam.topic === null) {
