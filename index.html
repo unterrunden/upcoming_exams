@@ -26,7 +26,7 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-start text-white px-6">
-  <h1 class="text-2xl md:text-6xl font-bold mt-10 mb-8 self-center">anstehende Klausuren</h1>
+  <h1 id="main-header" class="text-2xl md:text-6xl font-bold mt-10 mb-8 self-center">anstehende Klausuren</h1>
 
   <div class="w-full max-w-full">
     <h2 id="inProgressHeading" class="text-base md:text-2xl mb-4 font-semibold hidden">laufend</h2>
@@ -153,16 +153,16 @@
         quarter: 4
       },
       {
-	subject: "Mathematik",
-	date: "2025-06-12",
-	startTime: "08:00",
-	endTime: "09:40",
-	topic: "Untersuchen von Funktionen und Vektoren",
-	durationMinutes: 100,
-	paper: "kariert",
-	image: mathematicsURL,
-	grade: "EF",
-	quarter: 4
+		subject: "Mathematik",
+		date: "2025-06-12",
+		startTime: "08:00",
+		endTime: "09:40",
+		topic: "Untersuchen von Funktionen und Vektoren",
+		durationMinutes: 100,
+		paper: "kariert",
+		image: mathematicsURL,
+		grade: "EF",
+		quarter: 4
       },
       {
         subject: "Geschichte",
@@ -430,10 +430,11 @@
       }
     ];
 
-    const grade = "EF";
-    const quarter = 4;
+    const grade = "Q1";
+    const quarter = 1;
 
     document.querySelector('title').textContent = `Anstehende Klausuren (${grade} Q${quarter})`;
+	document.getElementById("main-title").textContent = `anstehende Klausuren (${grade} Quartal ${quarter})`;
 
     for (const exam of exams) {
       if (exam.topic === null) {
