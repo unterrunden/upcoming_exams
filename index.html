@@ -599,7 +599,7 @@
     ];
 
     const grade = "Q1";
-    const quarter = 1;
+    const quarter = 2;
 
     document.querySelector('title').textContent = `Anstehende Klausuren (${grade} Q${quarter})`;
 	document.getElementById("main-header").textContent = `anstehende Klausuren (${grade}.${quarter})`;
@@ -645,7 +645,7 @@
       card.innerHTML = `
         <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center px-4 pt-1 space-y-2.5">
           <h2 class="text-[1.05rem] md:text-[2.2rem] font-bold mb-1">${exam.subject}</h2>
-          <p class="text-[0.55rem] md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[0.65rem] md:text-[1.075rem] text-gray-300"></span></p>
+          <p class="text-[0.5rem] md:text-lg">${getWeekday(examStart)}, ${formatDate(examStart)} | ${exam.startTime} - ${exam.endTime} | ${exam.durationMinutes} min.<br><span id="countdown-${index}" class="text-[0.65rem] md:text-[1.075rem] text-gray-300"></span></p>
           <p class="text-[0.65rem] md:text-lg text-gray-400">${exam.paper}</p>
           <p class="mt-2 text-[0.55rem] md:text-[1.275rem]">${exam.topic}</p>
         </div>
